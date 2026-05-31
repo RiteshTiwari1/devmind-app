@@ -1,0 +1,33 @@
+spec_version: "0.1.0"
+name: devmind
+version: 1.0.0
+description: DevMind — The PR Truth Engine. Reviews PRs and calculates Truth Score by comparing Promise vs Claim vs Reality.
+
+model:
+  preferred: "openai:gpt-4o"
+  fallback:
+    - "anthropic:claude-sonnet-4-5-20250929"
+  constraints:
+    temperature: 0.2
+    max_tokens: 4096
+
+tools:
+  - cli
+  - read
+  - write
+  - memory
+
+runtime:
+  max_turns: 30
+  timeout: 180
+
+skills:
+  - fetch-pr-diff
+  - fetch-linked-issue
+  - read-developer-memory
+  - security-scan
+  - code-quality-check
+  - truth-validation
+  - generate-truth-report
+  - post-github-comment
+  - update-developer-memory

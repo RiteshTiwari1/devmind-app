@@ -1,0 +1,8 @@
+hooks:
+  pre_tool_use:
+    - script: safety-check.sh
+      description: Block any destructive or out-of-scope commands
+
+  on_error:
+    - script: log-error.sh
+      description: Log errors for debugging

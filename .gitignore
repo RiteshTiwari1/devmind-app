@@ -1,0 +1,30 @@
+# docs
+docs/
+
+# debug files
+debug_pr*.txt
+
+# backend
+backend/__pycache__/
+backend/*.pyc
+backend/devmind_reviews.json
+backend/.env
+backend/node_modules/
+backend/dist/
+
+# dashboard
+dashboard/node_modules/
+dashboard/.next/
+dashboard/.env*
+
+# agent
+agent/.gitagent/
+agent/workspace/
+agent/*.log
+agent/security-scan.log
+agent/.vscode/
+
+# misc
+.DS_Store
+*.pem
+.vscode/

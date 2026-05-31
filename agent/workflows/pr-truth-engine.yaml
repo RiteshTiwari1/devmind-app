@@ -1,0 +1,67 @@
+name: pr-truth-engine
+description: >
+  The complete PR review pipeline. Runs 9 steps sequentially to produce
+  a Truth Score by comparing Promise (Issue) vs Claim (PR desc) vs Reality (code diff).
+
+steps:
+  - skill: fetch-pr-diff
+    prompt: >
+      Fetch the PR details and full diff for PR #{PR_NUMBER} in repo {REPO}.
+      Use GITHUB_TOKEN from environment. Extract the PR title, description,
+      author username, and the complete code diff.
+
+  - skill: fetch-linked-issue
+    prompt: >
+      Look for a linked GitHub Issue in the PR description fetched in the previous step.
+      Search for patterns like "Fixes #N", "Closes #N", "Resolves #N", or "#N".
+      Fetch that issue's full content. This is the PROMISE.
+      If no issue is linked, note it and continue.
+
+  - skill: read-developer-memory
+    prompt: >
+      Load MEMORY.md and find any past observations about the PR author ({PR_AUTHOR}).
+      Extract their known patterns, strengths, and recurring issues.
+      If no memory exists for this developer, note it as their first review.
+
+  - skill: security-scan
+    prompt: >
+      Carefully scan the code diff from step 1 for security vulnerabilities.
+      Look for: hardcoded secrets, SQL injection, logging of sensitive data,
+      missing auth checks, and other OWASP top 10 issues.
+      Reference specific file names and line numbers.
+
+  - skill: code-quality-check
+    prompt: >
+      Review the code diff for quality issues: error handling, clarity,
+      maintainability, and test coverage.
+      Focus on the top 3 most important issues only.
+
+  - skill: truth-validation
+    prompt: >
+      Using the Issue content (PROMISE) from step 2 and the code diff (REALITY) from step 1:
+      1. Extract all specific requirements from the Issue
+      2. Score each requirement: FULLY_MET (100), PARTIALLY_MET (50), or NOT_MET (0)
+      3. Calculate the Truth Score as a percentage
+      4. List exactly what is missing before the PR can be merged
+      Be specific — reference exact line numbers and code patterns.
+
+  - skill: generate-truth-report
+    prompt: >
+      Assemble all findings from the previous steps into a complete Truth Report.
+      Include: Truth Score, requirements table, security findings,
+      quality notes, personalized developer note from memory,
+      and a clear list of what needs fixing before merge.
+      Use the exact markdown format specified in the skill.
+
+  - skill: post-github-comment
+    prompt: >
+      Post the Truth Report generated in the previous step as a comment
+      on PR #{PR_NUMBER} in repo {REPO}.
+      Use GITHUB_TOKEN from environment.
+      Verify the comment was posted successfully.
+
+  - skill: update-developer-memory
+    prompt: >
+      Based on this review, save 1-2 key observations about {PR_AUTHOR} to MEMORY.md.
+      Focus on patterns and significant findings.
+      Use the memory tool to save — it will auto-commit to git.
